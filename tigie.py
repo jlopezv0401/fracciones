@@ -36,7 +36,7 @@ documentos = cursor.fetchall()
 
 for documento in documentos:
     if len(documento[1]) > 0:
-        soup =  BeautifulSoup('' .join(documento[1].decode('iso_8859_1')))
+        soup =  BeautifulSoup('' .join(documento[1]))
         soup.prettify()
         #soup.__unicode__()
         #tabla = soup.find(name="table", attrs={"border" :"1"})
@@ -122,165 +122,204 @@ for documento in documentos:
                                 linea = linea + "\'" + textos[0].encode('utf-8') + "\',"
                         y+=1
                 x+=1
-                
-        linea = linea + "\'NULL\',\'NULL\',\'NULL\',\'NULL\',\'NULL\',\'NULL\',\'NULL\',"
         
         uno = tabla.find(name="font", text="RESTRICCIONES:")
-        dos = uno.findNext(name={"u","a","b","p","ui","font","table"})
+        dos = uno.findNext(["b","u","a","p","ui","font","table"])
         
 ##########################################################################################################################################
 #       RESTRICCIONES A LA IMPORTACION
 ##########################################################################################################################################
+        r_importa = ""
         a = "A la  Importación:"
         if dos.contents:
             if a in str(dos.contents[0]):
                 while(1):
-                    uno= uno.findNext()
+                    #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                    uno= uno.findNext("font")
                     if not uno:
                         break
                     else:
-                        print uno
                         if  uno.contents:
                             a = "A la Exportación:"
                             if a in str(uno.contents[0]):
                                 break
-                            #elif "A partir del 3 de septiembre de 2012" in str(uno.contents[0]):
-                            #    print "Encontrado"
-                            #else:
-                            #    print uno.contents[0]
+                            else:
+                                r_importa += " " + uno.contents[0]
+                                #print uno.contents[0]
         
-###########################################################################################################################################
-##       RESTRICCIONES A LA EXPORTACION
-###########################################################################################################################################                               
-#        a = "A la Exportación:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext(["b","u","a","p","ui","font","table"])
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "ANEXOS:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#        
-###########################################################################################################################################
-##       ANEXOS
-###########################################################################################################################################        
-#        a = "ANEXOS:"
-#        #print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext(["b","u","a","p","ui","font","table"])
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "CUPOS:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#                            
+##########################################################################################################################################
+#       RESTRICCIONES A LA EXPORTACION
+##########################################################################################################################################
+        r_exporta = ""
+        a = "A la Exportación:"
+        #print a
+        if a in str(uno.contents[0]):
+            while(1):
+                #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                uno= uno.findNext("font")
+                if not uno:
+                    break
+                else:        
+                    if  uno.contents:
+                        a = "ANEXOS:"
+                        if a in str(uno.contents[0]):
+                            break
+                        else:
+                            #print uno.contents[0]
+                            r_exporta += " " +  no.contents[0]
+        
+##########################################################################################################################################
+#       ANEXOS
+##########################################################################################################################################        
+        anexos = ""
+        a = "ANEXOS:"
+        #print a
+        if a in str(uno.contents[0]):
+            while(1):
+                #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                uno= uno.findNext("font")
+                if not uno:
+                    break
+                else:        
+                    if  uno.contents:
+                        a = "CUPOS:"
+                        if a in str(uno.contents[0]):
+                            break
+                        else:
+                            #print uno.contents[0]
+                            anexos += " " +  no.contents[0]
+                            
+        uno = tabla.find(name="font", text="CUPOS:")
+        #print uno
+        dos = uno.findNext(["b","u","a","p","ui","font","table"])
+        
 ###########################################################################################################################################
 ##       CUPOS PARA IMPORTAR DE
 ###########################################################################################################################################
-#        uno= uno.findNext(name={"b","u","a","p","ui","font","table"})                               
-#        a = "Para Importar de:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext(name={"b","u","a","p","ui","font","table"})
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "Para Exportar a:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#        
+        cupos_importa = ""
+        a = "Para Importar de:"
+        if dos.contents:
+            if a in str(dos.contents[0]):
+                while(1):
+                    #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                    uno= uno.findNext("font")
+                    if not uno:
+                        break
+                    else:
+                        if  uno.contents:
+                            a = "Para Exportar a:"
+                            if a in str(uno.contents[0]):
+                                break
+                            else:
+                                #print uno.contents[0]
+                                cupos_importa += " " +  uno.contents[0]
+                                
 ###########################################################################################################################################
 ##       CUPOS PARA EXPORTAR DE
 ###########################################################################################################################################
-#        a = "Para Exportar de:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext(name={"b","u","a","p","ui","font","table"})
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "OBSERVACIONES:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#
+        cupos_exporta = ""
+        a = "Para Esportar de:"
+        if dos.contents:
+            if a in str(dos.contents[0]):
+                while(1):
+                    #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                    uno= uno.findNext("font")
+                    if not uno:
+                        break
+                    else:
+                        if  uno.contents:
+                            a = "OBSERVACIONES:"
+                            if a in str(uno.contents[0]):
+                                break
+                            else:
+                                print uno.contents[0]
+                                cupos_exporta +=  " " + uno.contents[0]
+                                
+        uno = tabla.find(name="font", text="OBSERVACIONES:")
+        #print uno
+        dos = uno.findNext(["b","u","a","p","ui","font","table"])
 ###########################################################################################################################################
 ##       OBSERVACIONES GENERALES
 ###########################################################################################################################################
-#        uno= uno.findNext(name={"b","u","a","p","ui","font","table"})                               
-#        a = "Generales:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext(name={"b","u","a","p","ui","font","table"})
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "En Importación:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#                            
-###########################################################################################################################################
-##       OBSERVACIONES EN IMPORTACION
-###########################################################################################################################################                              
-#        a = "En Importación:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext()
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "En Exportación:"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
-#                            
-###########################################################################################################################################
-##       OBSERVACIONES EN EXPORTACION
-###########################################################################################################################################                              
-#        a = "En Exportación:"
-#        print a
-#        if a in str(uno.contents[0]):
-#            while(1):
-#                uno= uno.findNext()
-#                if not uno:
-#                    break
-#                else:        
-#                    if  uno.contents:
-#                        a = "Tratados de Libre Comercio"
-#                        if a in str(uno.contents[0]):
-#                            break
-#                        else:
-#                            print uno.contents[0]
+        observa_grales = ""
+        a = "Generales:"
+        if dos.contents:
+            if a in str(dos.contents[0]):
+                while(1):
+                    #uno= uno.findNext(["b","u","a","p","ui","font","table"])
+                    uno= uno.findNext("font")
+                    if not uno:
+                        break
+                    else:
+                        if  uno.contents:
+                            a = "En Importación:"
+                            if a in str(uno.contents[0]):
+                                break
+                            else:
+                                #print uno.contents[0]
+                                observa_grales +=  " " +  uno.contents[0]
+                            
+##########################################################################################################################################
+#       OBSERVACIONES EN IMPORTACION
+##########################################################################################################################################                              
+        observa_importa = ""
+        a = "En Importación:"
+        #print a
+        if a in str(uno.contents[0]):
+            while(1):
+                uno= uno.findNext("font")
+                if not uno:
+                    break
+                else:        
+                    if  uno.contents:
+                        a = "En Exportación:"
+                        if a in str(uno.contents[0]):
+                            break
+                        else:
+                            #print uno.contents[0]
+                            observa_importa +=  " " +  uno.contents[0]
+                            
+##########################################################################################################################################
+#       OBSERVACIONES EN EXPORTACION
+##########################################################################################################################################
+        observa_exporta = ""
+        a = "En Exportación:"
+        #print a
+        if a in str(uno.contents[0]):
+            while(1):
+                uno= uno.findNext("font")
+                if not uno:
+                    break
+                else:        
+                    if  uno.contents:
+                        a = "Tratados de Libre Comercio"
+                        if a in str(uno.contents[0]):
+                            break
+                        else:
+                            #print uno.contents[0]
+                            observa_exporta +=  " " + uno.contents[0]
+                        
+        linea = linea + "\'" + r_importa.encode('utf-8') + "\',\'" +  r_exporta.encode('utf-8')
+        linea = linea + "\',\'"+ anexos.encode('utf-8') + "\',\'" + cupos_importa.encode('utf-8') 
+        linea = linea + "\',\'" + cupos_exporta.encode('utf-8') + "\',\'" + observa_grales.encode('utf-8')
+        linea = linea + "\',\'" + observa_importa.encode('utf-8') + "\'," + observa_exporta.encode('utf-8') + "\',"
         
 ##########################################################################################################################################
 #       TABLA TRATADOS DE LIBRE COMERCIO
 ##########################################################################################################################################
         tabla3 = tabla2.findNext(name="table")
+        while(1):
+            uno= tabla3.findNext("font")
+            if not uno:
+                break
+            else:        
+                if  uno.contents:
+                    a = "Tratados de Libre Comercio"
+                    if a in str(uno.contents[0]):
+                        break
+                    else:
+                        tabla3 = tabla3.findNext(name="table")
+
         filas = []       
         if not tabla3:
             print documento[0] + ' Sin tabla3'
